@@ -1,13 +1,13 @@
 // VoiceToText for iPhone: hold a button, speak, release.
-// Speech -> text: Groq Whisper. Correction: Claude Haiku. Answers: Claude Opus.
+// Speech -> text: Groq Whisper. Correction and answers: Claude Sonnet.
 // Same behavior and prompts as the Windows app. API keys live only in this browser's storage.
 
 import Anthropic from "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.129.0/+esm";
 
 const GROQ_TRANSCRIBE_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 const STT_MODEL = "whisper-large-v3-turbo";
-const DICTATE_MODEL = "claude-haiku-4-5";
-const ASK_MODEL = "claude-opus-5";
+const DICTATE_MODEL = "claude-sonnet-5";
+const ASK_MODEL = "claude-sonnet-5";
 const LANGUAGES = ["en", "ru"]; // anything else Whisper detects is re-checked in one of these
 const SLAVIC = new Set(["ru", "uk", "pl", "be", "bg", "cs", "sk", "sr", "hr", "bs", "sl", "mk"]);
 const LANGUAGE_CODES = {
@@ -311,6 +311,7 @@ async function correct(text) {
     max_tokens: 16000,
     system: systemPrompt("dictate"),
     messages: [{ role: "user", content: text }],
+    output_config: { effort: "low" },
   });
   const result = textOf(response);
   // A reply much longer than the dictation means the model answered it instead of editing it.
@@ -319,15 +320,12 @@ async function correct(text) {
 }
 
 async function ask(question) {
-  const response = await claude().beta.messages.create({
+  const response = await claude().messages.create({
     model: ASK_MODEL,
     max_tokens: 16000,
     system: systemPrompt("ask"),
     messages: [{ role: "user", content: question }],
     output_config: { effort: "low" },
-    // If Opus declines, the API retries on a fallback model within the same call.
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
   });
   return textOf(response);
 }
