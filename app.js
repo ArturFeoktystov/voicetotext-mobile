@@ -457,6 +457,76 @@ $("settings-form").addEventListener("submit", () => {
   setStatus("Settings saved.");
 });
 
+// --- scan keys from the laptop's QR code (tools/show_keys_qr.py in the VoiceToText repo) ----------
+// The QR holds "VTT-KEYS:" + JSON {groq, anthropic}. It is decoded on the phone; nothing is sent anywhere.
+
+const QR_PREFIX = "VTT-KEYS:";
+const scanner = $("scanner");
+const scannerVideo = $("scanner-video");
+let scanStream = null;
+let scanFrame = null;
+
+function stopScanning() {
+  cancelAnimationFrame(scanFrame);
+  scanFrame = null;
+  scanStream?.getTracks().forEach((t) => t.stop());
+  scanStream = null;
+  if (scanner.open) scanner.close();
+}
+
+function applyScannedKeys(text) {
+  let keys;
+  try {
+    keys = JSON.parse(text.slice(QR_PREFIX.length));
+  } catch {
+    return false;
+  }
+  if (!keys.groq?.startsWith("gsk_") || !keys.anthropic?.startsWith("sk-ant-")) return false;
+  $("groq-key").value = keys.groq;
+  $("anthropic-key").value = keys.anthropic;
+  save("settings", { ...settings(), groqKey: keys.groq, anthropicKey: keys.anthropic });
+  return true;
+}
+
+$("scan-keys").addEventListener("click", async () => {
+  const status = $("scanner-status");
+  status.textContent = "Starting camera…";
+  scanner.showModal();
+  try {
+    const { default: jsQR } = await import("https://cdn.jsdelivr.net/npm/jsqr@1.4.0/+esm");
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    scannerVideo.srcObject = scanStream;
+    await scannerVideo.play();
+    status.textContent = "Looking for the QR code…";
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const tick = () => {
+      if (!scanStream) return;
+      if (scannerVideo.readyState >= 2) {
+        canvas.width = scannerVideo.videoWidth;
+        canvas.height = scannerVideo.videoHeight;
+        ctx.drawImage(scannerVideo, 0, 0);
+        const code = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+        if (code?.data.startsWith(QR_PREFIX)) {
+          if (applyScannedKeys(code.data)) {
+            stopScanning();
+            setStatus("Keys added from the laptop — tap Save.");
+            navigator.vibrate?.(30);
+            return;
+          }
+          status.textContent = "That QR code doesn't contain valid keys.";
+        }
+      }
+      scanFrame = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch {
+    status.textContent = "Camera not available. Allow camera access for this app in iPhone Settings.";
+  }
+});
+$("scanner-cancel").addEventListener("click", stopScanning);
+scanner.addEventListener("close", stopScanning);
+
 $("clear-history").addEventListener("click", () => {
   save("history", []);
   renderHistory();

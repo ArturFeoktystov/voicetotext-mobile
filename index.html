@@ -53,6 +53,7 @@
     <form method="dialog" id="settings-form">
       <h2>Settings</h2>
       <p class="note">Keys are stored only on this phone, inside this app.</p>
+      <button type="button" id="scan-keys" class="scan">📷 Scan keys from laptop</button>
       <label>Groq API key (speech → text)
         <input id="groq-key" type="password" autocomplete="off" placeholder="gsk_…">
       </label>
@@ -69,7 +70,18 @@
     </form>
   </dialog>
 
+  <dialog id="scanner">
+    <h2>Scan keys</h2>
+    <p class="note">Point the camera at the QR code on your laptop screen.</p>
+    <video id="scanner-video" playsinline muted></video>
+    <p id="scanner-status" class="note"></p>
+    <div class="dialog-actions">
+      <span></span>
+      <button type="button" id="scanner-cancel" class="secondary">Cancel</button>
+    </div>
+  </dialog>
+
   <!-- Bump ?v= on every change so phones don't keep an old cached copy. -->
-  <script type="module" src="app.js?v=3"></script>
+  <script type="module" src="app.js?v=4"></script>
 </body>
 </html>

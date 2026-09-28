@@ -116,6 +116,11 @@ input, textarea {
   -webkit-user-select: text; user-select: text;
 }
 .dialog-actions { display: flex; justify-content: space-between; gap: 10px; }
+.scan {
+  width: 100%; margin-bottom: 14px; padding: 12px; font-size: 16px; font-weight: 600;
+  color: var(--gold); background: #1d1a10; border: 1px solid var(--gold); border-radius: 12px;
+}
+#scanner-video { width: 100%; border-radius: 12px; background: #000; aspect-ratio: 1; object-fit: cover; }
 .primary, .secondary {
   padding: 10px 18px; font-size: 16px; border-radius: 10px; border: 1px solid #3a3a40;
 }
