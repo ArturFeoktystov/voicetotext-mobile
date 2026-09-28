@@ -1,12 +1,12 @@
 // VoiceToText for iPhone: hold a button, speak, release.
-// Speech -> text: Groq Whisper. Correction and answers: Claude Sonnet.
+// Speech -> text: Groq Whisper. Correction: Claude Haiku. Answers: Claude Sonnet.
 // Same behavior and prompts as the Windows app. API keys live only in this browser's storage.
 
 import Anthropic from "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.129.0/+esm";
 
 const GROQ_TRANSCRIBE_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 const STT_MODEL = "whisper-large-v3-turbo";
-const DICTATE_MODEL = "claude-sonnet-5";
+const DICTATE_MODEL = "claude-haiku-4-5";
 const ASK_MODEL = "claude-sonnet-5";
 const LANGUAGES = ["en", "ru"]; // anything else Whisper detects is re-checked in one of these
 const SLAVIC = new Set(["ru", "uk", "pl", "be", "bg", "cs", "sk", "sr", "hr", "bs", "sl", "mk"]);
@@ -311,7 +311,7 @@ async function correct(text) {
     max_tokens: 16000,
     system: systemPrompt("dictate"),
     messages: [{ role: "user", content: text }],
-    output_config: { effort: "low" },
+    // No effort setting: Haiku 4.5 doesn't support it.
   });
   const result = textOf(response);
   // A reply much longer than the dictation means the model answered it instead of editing it.

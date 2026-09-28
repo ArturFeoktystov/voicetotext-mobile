@@ -2,7 +2,7 @@
 
 The iPhone version of [VoiceToText](https://github.com/ArturFeoktystov/VoiceToText): a web app you
 add to the home screen. Hold **Dictate**, speak, release → corrected text (Groq Whisper → Claude
-Sonnet). Hold **Ask** → an answer (Claude Sonnet). Then **Copy** or **Share** it into any app.
+Haiku). Hold **Ask** → an answer (Claude Sonnet). Then **Copy** or **Share** it into any app.
 
 No App Store, no signing, no server. This repository contains **no API keys**: each user types
 their own Groq and Anthropic keys in the app's Settings, and they are stored only in that phone's
