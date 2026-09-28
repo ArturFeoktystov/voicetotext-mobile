@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>VoiceToText</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VoiceToText">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon-192.png" alt="" class="logo">
+    <h1>VoiceToText</h1>
+    <button id="open-settings" class="icon-button" aria-label="Settings">⚙︎</button>
+  </header>
+
+  <main>
+    <section id="result-card" class="card">
+      <div id="status" class="status">Hold a button below and speak.</div>
+      <div id="result" class="result" aria-live="polite"></div>
+      <div class="actions">
+        <button id="copy" class="action" disabled>Copy</button>
+        <button id="share" class="action" disabled>Share</button>
+      </div>
+    </section>
+
+    <details id="history-box" class="card">
+      <summary>History</summary>
+      <ol id="history"></ol>
+    </details>
+  </main>
+
+  <footer>
+    <canvas id="bars" width="280" height="36" aria-hidden="true"></canvas>
+    <div class="hold-row">
+      <button id="hold-dictate" class="hold dictate" data-mode="dictate">
+        <span class="hold-title">Dictate</span><span class="hold-hint">hold &amp; speak</span>
+      </button>
+      <button id="hold-ask" class="hold ask" data-mode="ask">
+        <span class="hold-title">Ask</span><span class="hold-hint">hold &amp; ask</span>
+      </button>
+    </div>
+  </footer>
+
+  <dialog id="settings">
+    <form method="dialog" id="settings-form">
+      <h2>Settings</h2>
+      <p class="note">Keys are stored only on this phone, inside this app.</p>
+      <label>Groq API key (speech → text)
+        <input id="groq-key" type="password" autocomplete="off" placeholder="gsk_…">
+      </label>
+      <label>Anthropic API key (Claude)
+        <input id="anthropic-key" type="password" autocomplete="off" placeholder="sk-ant-…">
+      </label>
+      <label>Vocabulary — names and terms to spell exactly, one per line
+        <textarea id="vocabulary" rows="4" placeholder="Artur"></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="clear-history" class="secondary">Clear history</button>
+        <button type="submit" value="save" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
